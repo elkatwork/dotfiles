@@ -1,1 +1,1 @@
-/home/thi/dotfiles/home/.bashrc
+/home/thi/.homesick/repos/dotfiles/home/.bashrc
