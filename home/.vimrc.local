@@ -1,0 +1,214 @@
+" personal leader key
+let mapleader = "\\"
+
+" GUI and colors
+highlight PMenu gui=bold guibg=#CECECE guifg=#444444
+
+if has("gui_running")
+    set guioptions=egmrt
+endif
+
+" bash like completion
+set wildmenu
+set wildmode=full
+
+" remember the git root of the current project
+autocmd VimEnter,BufEnter * let b:git_root_dir = system("git rev-parse --show-toplevel 2>/dev/null")[:-2]
+
+" ctrlp options
+let g:ctrlp_max_height = 50
+let g:ctrlp_working_path_mode = 2
+let g:ctrlp_root_markers = ['.hg/']
+let g:ctrlp_custom_ignore = { 'dir': '\.jhw-cache$\|\.git$\|\.hg$\|\.tags$', 'file': '\.class$\|\.jar$' }
+
+" disable search hilight
+noremap <silent> <leader>ns :silent :nohlsearch<cr>
+
+" make ctrlp and dwm work together
+function! DWMOpenFunc(action, line)
+    if a:action == 'v' || a:action == 'h'
+        let filename = fnameescape(fnamemodify(a:line, ':p'))
+        call DWM_New()
+        execute ":silent! lcd " . b:git_root_dir
+        execute 'edit' filename
+    else
+        call call('ctrlp#acceptfile', [a:action, a:line])
+    endif
+endfunction
+
+let g:ctrlp_open_func = { 'files': 'DWMOpenFunc' }
+
+
+" git shortcuts
+map <leader>gb :Gblame<cr>
+
+" rails shortcuts
+map <leader>rc :Rcontroller<cr>
+map <leader>rh :Rhelper<cr>
+map <leader>rj :Rjavascript<cr>
+map <leader>rl :Rlayout<cr>
+map <leader>rm :Rmodel<cr>
+map <leader>rs :Rstylesheet<cr>
+map <leader>rv :Rview<cr>
+
+" relative line numbers
+set rnu
+
+" no auto changedir
+au! basics BufEnter
+au BufEnter * syntax sync fromstart
+
+" no swap/backup files
+set nobackup
+set noswapfile
+
+" pastetoggle - disable autoindent for pasting
+set pastetoggle=<F2>
+
+" force sudo write
+cmap w!! w !sudo tee % >/dev/null
+
+" fugitive shortcuts
+noremap <Leader>gs :Gstatus<cr>
+noremap <Leader>gc :Gcommit<cr>
+noremap <Leader>ga :Gwrite<cr>
+noremap <Leader>gl :Glog<cr>
+noremap <Leader>gb :Gblame<cr>
+
+" Bubble single lines
+nmap <C-k> ddkP
+nmap <C-j> ddp
+" Bubble multiple lines
+vmap <C-k> xkP`[V`]
+vmap <c-j> xp`[V`]
+
+" expand tabs in c/java-code
+augroup filetype_settings
+	au FileType {c,cpp,java} set ts=4 sw=4 tw=79 expandtab et
+augroup END
+
+" ctags settings
+let Tlist_Ctags_Cmd = "/usr/local/bin/ctags"
+let Tlist_WinWidth = 50
+map <F4> :TlistToggle<CR>
+map <F5> :!/usr/local/bin/ctags -R --c++-kinds=+p --fields=+iaS --extra=+q .<CR>
+nnoremap <silent><Leader><C-]> <C-w><C-]><C-w>T
+nnoremap <silent><C-]> g<C-]>
+
+" specs in vim config
+let g:ruby_conque_rspec_command='bundle exec rspec -cfs'
+
+map <F6> :call RunRspecCurrentFileConque()<CR>
+map <F7> :call RunRspecCurrentLineConque()<CR>
+map <F8> :call RunRspecAllFilesConque()<CR>
+let g:ruby_conque_window_height=20
+
+" fancy powerline icons
+let g:Powerline_symbols = 'fancy'
+
+" paste debugger snippet
+nnoremap <silent><Leader>ad Orequire 'ruby-debug'<CR>debugger<ESC>
+
+" remove trailing whitespaces and convert tabs into spaces
+noremap <silent> <Leader>w :set expandtab<CR>:retab<CR>:g/^\s*$/,/\S/-j<Bar>%s/\s\+$//<CR>
+
+" turn on indentation highlighting by default
+let g:indent_guides_enable_on_vim_startup = 1
+let g:indent_guides_start_level = 2
+let g:indent_guides_auto_colors = 0
+autocmd VimEnter,Colorscheme * :hi IndentGuidesEven ctermbg=0
+
+" highlight current line
+set cursorline
+
+" turn off line wrapping
+set nowrap
+
+" horizontal frame resizing shortcuts
+nmap <c-l> <c-w><
+nmap <c-h> <c-w>>
+
+" syntastic
+let g:syntastic_auto_loc_list=1
+let g:syntastic_error_symbol='✗'
+let g:syntastic_warning_symbol='⚠'
+
+" taglist
+let Tlist_GainFocus_On_ToggleOpen = 1
+let Tlist_Close_On_Select = 1
+let Tlist_Highlight_Tag_On_BufEnter = 0
+let Tlist_Sort_Type = "name"
+
+" ruby completion
+autocmd FileType ruby,eruby set omnifunc=rubycomplete#Complete
+autocmd FileType ruby,eruby let g:rubycomplete_buffer_loading = 1
+autocmd FileType ruby,eruby let g:rubycomplete_rails = 1
+autocmd FileType ruby,eruby let g:rubycomplete_classes_in_global = 1
+
+" all remaining filetypes use syntaxcomplete
+autocmd Filetype *
+            \ if &omnifunc == "" |
+            \   setlocal omnifunc=syntaxcomplete#Complete |
+            \ endif
+
+" delete fugitive buffers
+autocmd BufReadPost fugitive://* set bufhidden=delete
+
+" find next merge conflict
+nmap <silent> ]n /<<<<<CR>
+
+" tab switching
+map  <silent> <C-Up> :tabprevious<cr>
+imap <silent> <C-Up> <esc>:tabprevious<cr>
+map  <silent> <C-Down> :tabnext<cr>
+imap <silent> <C-Down> <esc>:tabnext<cr>
+
+" git-grep function
+if !exists('g:git_grep_command')
+	let g:git_grep_command = 'git grep -n '
+endif
+
+function! s:GitGrep(terms)
+	let expr = g:git_grep_command."'".a:terms."'"
+
+	execute ":silent! lcd " . b:git_root_dir
+	cgetexpr system(expr)
+	execute ":silent! lcd " . expand("%:p:h")
+
+	cwin
+	echo 'Number of matches: ' . len(getqflist())
+endfunction
+
+function! s:GitGrepWord()
+	call s:GitGrep(expand("<cword>"))
+endfunction
+
+function! s:GitGrepWordBoundaries()
+	call s:GitGrep("\\b".expand("<cword>")."\\b")
+endfunction
+
+command! -nargs=0 GitGrepWordBoundaries :call s:GitGrepWordBoundaries()
+command! -nargs=0 GitGrepWord :call s:GitGrepWord()
+command! -nargs=+ GitGrep :call s:GitGrep(<q-args>)
+
+" git grep for word under the cursor
+nmap <silent> <leader>gw :GitGrepWordBoundaries<CR>
+nmap <silent> <leader>gW :GitGrepWord<CR>
+
+function! s:try(cmd, default)
+  if exists(':' . a:cmd) && !v:count
+    let tick = b:changedtick
+    exe a:cmd
+    if tick == b:changedtick
+      execute 'normal! '.a:default
+    endif
+  else
+    execute 'normal! '.v:count.a:default
+  endif
+endfunction
+
+nnoremap <silent> gJ :<C-U>call <SID>try('SplitjoinJoin', 'gJ')<CR>
+nnoremap <silent> J :<C-U>call <SID>try('SplitjoinJoin', 'J')<CR>
+nnoremap <silent> gS :SplitjoinSplit<CR>
+nnoremap <silent> S :<C-U>call <SID>try('SplitjoinSplit', 'S')<CR>
+nnoremap <silent> r<CR> :<C-U>call <SID>try('SplitjoinSplit', "r\015")<CR>

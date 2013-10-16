@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+declare -A BUNDLES
+
+for constant in auto_mkdir coffee_script endwise git haml javascript markdown matchit powerline ruby solarized fugitive ctrlp vim-rails nerdcommenter surround ack-vim c-syntax supertab taglist vim-ruby-conque vim-conque vim-powerline decho syntastic vim-indent-guides applescript genutils scala cscope dwm vim-coffee-script vim-repeat vim-abolish vim-sleuth vim-splitjoin; do
+	BUNDLES[$constant]=1
+done
+
+for i in /home/thi/.vim/bundle/*/; do
+	bundle=$(basename $i)
+	if [[ ! ${BUNDLES[$bundle]} ]]; then
+		echo "Removing bundle ${bundle} ..."
+		rm -rf $i
+	fi
+done

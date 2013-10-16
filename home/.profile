@@ -1,0 +1,1 @@
+/home/thi/dotfiles/home/.bashrc

@@ -1,0 +1,40 @@
+[user]
+	email = thi@gurkenbruehe.de
+	name = Thomas Hirsch
+[alias]
+	co = checkout
+	ci = commit
+	cp = cherry-pick
+	st = status
+	d = diff
+	dw = diff --color-words
+	dc = diff --cached
+	dcw = diff --cached --color-words
+	wn = !BRANCH=$(git symbolic-ref HEAD|sed s:refs/heads/::) && git fetch -q origin && git log --reverse --stat -p ${BRANCH}..origin/${BRANCH}
+	lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %Cblue(%an)%Creset' --abbrev-commit --date=relative
+	log1 = log --pretty=oneline --abbrev-commit --decorate
+	eu = "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; $EDITOR `f`"
+	au = "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; git add `f`"
+	gredit = "!f() { git grep \"$@\"; $EDITOR $(git grep -l \"$@\"); }; f"
+[color]
+	branch = auto
+	diff = auto
+	grep = auto
+	interactive = auto
+	showbranch = auto
+	status = auto
+	ui = auto
+[branch]
+	autosetupmerge = true
+[push]
+	default = tracking
+[diff]
+	renames = true
+[core]
+	excludesfile = /home/thi/.gitignore
+[github]
+	user = elkatwork
+[hub]
+	protocol = https
+[credential]
+	helper = cache --timeout 28800
