@@ -1,8 +1,37 @@
 " personal leader key
 let mapleader = "\\"
 
+" bundles
+NeoBundle 'tpope/vim-fugitive'
+NeoBundle 'kien/ctrlp.vim'
+NeoBundle 'tpope/vim-rails.git'
+NeoBundle 'scrooloose/nerdcommenter'
+NeoBundle 'tpope/vim-surround.git'
+NeoBundle 'elkatwork/vim-syntax-files.git'
+NeoBundle 'elkatwork/vim-ruby-conque.git'
+NeoBundle 'elkatwork/vim-conque.git'
+NeoBundle 'bling/vim-airline'
+NeoBundle 'scrooloose/syntastic.git'
+NeoBundle 'nathanaelkane/vim-indent-guides.git'
+NeoBundle 'vim-scripts/genutils.git'
+NeoBundle 'vim-scripts/cscope.vim.git'
+NeoBundle 'spolu/dwm.vim.git'
+NeoBundle 'tpope/vim-repeat.git'
+NeoBundle 'tpope/vim-sleuth.git'
+NeoBundle 'AndrewRadev/splitjoin.vim.git'
+NeoBundle 'terryma/vim-multiple-cursors'
+NeoBundle 'altercation/vim-colors-solarized'
+NeoBundle 'Keithbsmiley/investigate.vim'
+NeoBundle 'kchmck/vim-coffee-script'
+NeoBundle 'heartsentwined/vim-emblem'
+NeoBundle 'fatih/vim-go'
+NeoBundle 'Valloric/YouCompleteMe'
+
 " GUI and colors
+set background=dark
+colorscheme solarized
 highlight PMenu gui=bold guibg=#CECECE guifg=#444444
+let g:airline_powerline_fonts = 1
 
 if has("gui_running")
     set guioptions=egmrt
@@ -55,7 +84,7 @@ map <leader>rv :Rview<cr>
 set rnu
 
 " no auto changedir
-au! basics BufEnter
+"au! basics BufEnter
 au BufEnter * syntax sync fromstart
 
 " no swap/backup files
@@ -103,9 +132,6 @@ map <F7> :call RunRspecCurrentLineConque()<CR>
 map <F8> :call RunRspecAllFilesConque()<CR>
 let g:ruby_conque_window_height=20
 
-" fancy powerline icons
-let g:Powerline_symbols = 'fancy'
-
 " paste debugger snippet
 nnoremap <silent><Leader>ad Orequire 'ruby-debug'<CR>debugger<ESC>
 
@@ -113,9 +139,9 @@ nnoremap <silent><Leader>ad Orequire 'ruby-debug'<CR>debugger<ESC>
 noremap <silent> <Leader>w :set expandtab<CR>:retab<CR>:g/^\s*$/,/\S/-j<Bar>%s/\s\+$//<CR>
 
 " turn on indentation highlighting by default
-let g:indent_guides_enable_on_vim_startup = 1
 let g:indent_guides_start_level = 2
 let g:indent_guides_auto_colors = 0
+let g:indent_guides_enable_on_vim_startup = 1
 autocmd VimEnter,Colorscheme * :hi IndentGuidesEven ctermbg=0
 
 " highlight current line
@@ -139,17 +165,30 @@ let Tlist_Close_On_Select = 1
 let Tlist_Highlight_Tag_On_BufEnter = 0
 let Tlist_Sort_Type = "name"
 
+" neocomplete
+let g:acp_enableAtStartup = 0
+let g:neocomplete#enable_at_startup = 1
+let g:neocomplete#enable_smart_case = 1
+let g:neocomplete#sources#syntax#min_keyword_length = 3
+
 " ruby completion
 autocmd FileType ruby,eruby set omnifunc=rubycomplete#Complete
 autocmd FileType ruby,eruby let g:rubycomplete_buffer_loading = 1
 autocmd FileType ruby,eruby let g:rubycomplete_rails = 1
 autocmd FileType ruby,eruby let g:rubycomplete_classes_in_global = 1
 
+" don't highlight tabs in Go code
+autocmd FileType go set nolist
+
+" enable syntax highlighting for coffee script
+autocmd BufNewFile,BufRead *.coffee set filetype=coffee
+autocmd BufNewFile,BufRead *.emblem set filetype=emblem
+
 " all remaining filetypes use syntaxcomplete
-autocmd Filetype *
-            \ if &omnifunc == "" |
-            \   setlocal omnifunc=syntaxcomplete#Complete |
-            \ endif
+"autocmd Filetype *
+"            \ if &omnifunc == "" |
+"            \   setlocal omnifunc=syntaxcomplete#Complete |
+"            \ endif
 
 " delete fugitive buffers
 autocmd BufReadPost fugitive://* set bufhidden=delete
@@ -212,3 +251,6 @@ nnoremap <silent> J :<C-U>call <SID>try('SplitjoinJoin', 'J')<CR>
 nnoremap <silent> gS :SplitjoinSplit<CR>
 nnoremap <silent> S :<C-U>call <SID>try('SplitjoinSplit', 'S')<CR>
 nnoremap <silent> r<CR> :<C-U>call <SID>try('SplitjoinSplit', "r\015")<CR>
+
+" disable mouse support
+set mouse=
